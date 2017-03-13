@@ -1,0 +1,75 @@
+# Add the following to your .bashrc or .profile
+#
+# # Add interface mods
+# export MY_PSMOD="${HOME}/.myps1"
+# if [ -e $MY_PSMOD ]
+# then
+#     source $MY_PSMOD
+#     fi
+#
+#
+#
+#
+# INTERFACE MOD 1
+# #PS1="$(if [[ ${EUID} == 0 ]]; then echo '\[\033[01;31m\]\h'; else echo '\[\033[01;32m\]\u@\h'; fi)\[\033[01;34m\] \w \$([[ \$? != 0 ]] && echo \"\[\033[01;31m\]:(\[\033[01;34m\] \")\$\[\033[00m\] "
+#
+# # Use this other PS1 string if you want \W for root and \w for all other users:
+# # PS1="$(if [[ ${EUID} == 0 ]]; then echo '\[\033[01;31m\]\h\[\033[01;34m\] \W'; else echo '\[\033[01;32m\]\u@\h\[\033[01;34m\] \w'; fi) \$([[ \$? != 0 ]] && echo \"\[\033[01;31m\]:(\[\033[01;34m\] \")\$\[\033[00m\] "
+#
+# # INTERFACE MOD 2
+# # https://bbs.archlinux.org/viewtopic.php?pid=1068202#p1068202
+# #PS1="\[\033[0;37m\]\342\224\214\342\224\200\$([[ \$? != 0 ]] && echo \"[\[\033[0;31m\]\342\234\227\[\033[0;37m\]]\342\224\200\")[$(if [[ ${EUID} == 0 ]]; then echo '\[\033[0;31m\]\h'; else echo '\[\033[0;33m\]\u\[\033[0;37m\]@\[\033[0;96m\]\h'; fi)\[\033[0;37m\]]\342\224\200[\[\033[0;32m\]\w\[\033[0;37m\]]\n\[\033[0;37m\]\342\224\224\342\224\200\342\224\200\342\225\274 \[\033[0m\]"
+#
+# # INTERFACE MOD 3
+# # http://maketecheasier.com/8-useful-and-interesting-bash-prompts/2009/09/04
+# #PS1="\n\[\033[1;37m\]\342\224\214($(if [[ ${EUID} == 0 ]]; then echo '\[\033[01;31m\]\h'; else echo '\[\033[01;34m\]\u@\h'; fi)\[\033[1;37m\])\$([[ \$? != 0 ]] && echo \"\342\224\200(\[\033[0;31m\]\342\234\227\[\033[1;37m\])\")\342\224\200(\[\033[1;34m\]\@ \d\[\033[1;37m\])\[\033[1;37m\]\n\342\224\224\342\224\200(\[\033[1;32m\]\w\[\033[1;37m\])\342\224\200(\[\033[1;32m\]\$(ls -1 | wc -l | sed 's: ::g') files, \$(ls -sh | head -n1 | sed 's/total //')b\[\033[1;37m\])\342\224\200> \[\033[0m\]"
+#
+# # MY MOD MASHUP 1
+# #PS1="\n\[\033[0;37m\]\342\224\214\342\224\200[\[\033[1;34m\]\@ \d\[\033[1;37m\]]\342\224\200\$([[ \$? != 0 ]] && echo \"[\[\033[0;31m\]\342\234\227\[\033[0;37m\]]\342\224\200\")[$(if [[ ${EUID} == 0 ]]; then echo '\[\033[0;31m\]\h'; else echo '\[\033[0;33m\]\u\[\033[0;37m\]@\[\033[0;96m\]\h'; fi)\[\033[0;37m\]]\342\224\200[\[\033[0;32m\]\w\[\033[0;37m\]](\[\033[1;32m\$(ls -1 | wc -l | sed 's: ::g') files, \$(ls -sh | head -n1 | sed 's/total //')b\[\033[1;37m\])\n\[\033[0;37m\]\342\224\224\342\224\200\342\224\200\342\225\274 \[\033[0m\]"
+
+# Terminal specific colors
+if [ "$TERM_PROGRAM" == "iTerm.app" ]
+then
+    SEPERATOR_COLOR="\[\033[0;37m\]"
+    DATE_TIME_COLOR="\[\033[35;40m\]"
+    CURRENT_USER_COLOR="\[\033[0;33m\]"
+    DEVICE_NAME_COLOR="\[\033[8;34;40m\]"
+    DIRECTORY_INFO_COLOR="\[\033[0;32m\]"
+else
+    # It's *probably* "$TERM_PROGRAM" == "Apple_Terminal"
+    SEPERATOR_COLOR="\[\033[0;37m\]"
+    DATE_TIME_COLOR="\[\033[1;34m\]"
+    CURRENT_USER_COLOR="\[\033[0;33m\]"
+    DEVICE_NAME_COLOR="\[\033[0;96m\]"
+    DIRECTORY_INFO_COLOR="\[\033[0;32m\]"
+fi
+
+# Broken down
+PS1="\n" # blank space between the last command
+
+#PS1=$PS1"\[\033[0;37m\]\342\224\214\342\224\200"  # a right angle and
+PS1=$PS1"${SEPERATOR_COLOR}\342\224\214\342\224\200["  # a right angle and
+# hypen like: ┌─[
+
+#PS1=$PS1"\[\033[32;40m\]\@ \d\[\033[1;37m\]]"     # current time
+PS1=$PS1"${DATE_TIME_COLOR}\@ \d"     # current time
+
+# formatted like: [01:56 pm Thu Feb 06]
+PS1=$PS1"${SEPERATOR_COLOR}]\342\224\200["  # hypen thingy and  brackets --> "]-["
+
+# user and device
+PS1=$PS1"\$([[ \$? != 0 ]] && echo \"\[\033[0;31m\]\342\234\227\[\033[0;37m\]]\342\224\200\")"  # adds '[✗x]─' if the last command didn't succeed
+PS1=$PS1"\$(if [[ ${EUID} == 0 ]]; then echo '\[\033[0;31m\]\h'; else echo '${CURRENT_USER_COLOR}\u${SEPERATOR_COLOR}@${DEVICE_NAME_COLOR}\h'; fi)\[\033[0;37m\]"  # show user & host or root
+
+PS1=$PS1"${SEPERATOR_COLOR}]\342\224\200(" # hypen thingy surrounded by brackets ..so -> "]-("
+
+# directory info
+PS1=$PS1"${DIRECTORY_INFO_COLOR}\$(ls -1 | wc -l | sed 's: ::g') files, \$(ls -sh | head -n1 | sed 's/total //')b" # number of files in the current directory, and the directory contents in bytes
+
+PS1=$PS1"${SEPERATOR_COLOR})\n\342\224\200[" # closing bracket + new line + bracket
+
+# pwd
+PS1=$PS1"${DIRECTORY_INFO_COLOR}\w" # list the current directory
+
+PS1=$PS1"${SEPERATOR_COLOR}]\n\342\224\224\342\224\200\342\224\200\342\225\274 \[\033[0m\]"  #  closing bracket + new line + right angle thingy before shell cursor: └──╼
+
