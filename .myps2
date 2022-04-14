@@ -1,0 +1,73 @@
+# This is intended for the zsh shell
+
+# Add the following to your .bashrc or .profile
+#
+# # Add interface mods
+# export MY_PSMOD="${HOME}/.myps1"
+# if [ -e $MY_PSMOD ]
+# then
+#     source $MY_PSMOD
+#     fi
+#
+
+
+#
+# Formating based on: https://www.tweaking4all.com/software/macosx-software/customize-zsh-prompt/
+#
+
+
+# ZSH specific colours for iTerm || Apple_Terminal
+if [ "$TERM_PROGRAM" == "iTerm.app" ]
+then
+    PSFRAME_COLOUR="%F{015}"
+    PSDATE_TIME="%F{013}%D{%t %a %b %d%}"
+    PSUSER="%F{011}%n"
+    PSDEVICE="%F{012}%m"
+    PSDIRINFO="%F{010}"
+    PSCURDIR="%F{010}%d"    
+else
+    # It's *probably* "$TERM_PROGRAM" == "Apple_Terminal"
+    PSFRAME_COLOUR="%F{015}"
+    PSDATE_TIME="%F{013}%D{%t %a %b %d%}"
+    PSUSER="%F{011}%n"
+    PSDEVICE="%F{012}%m"
+    PSDIRINFO="%F{010}"
+    PSCURDIR="%F{010}%d"
+fi
+
+
+# Broken down
+PS1="\n" # blank space between the last command
+
+# hypen like: ┌─[
+PS1=$PS1"${PSFRAME_COLOUR\342\224\214\342\224\200["  # a right angle and
+
+ # current time
+PS1=$PS1"${PSDATE_TIME}"    
+
+# hypen thingy and  brackets --> "]-["
+PS1=$PS1"${PSFRAME_COLOUR}]\342\224\200["  
+
+# user and device
+#PS1=$PS1"\$([[ \$? != 0 ]] && echo \"\[\033[0;31m\]\342\234\227\[\033[0;37m\]]\342\224\200\")"  # adds '[✗x]─' if the last command didn't succeed
+#PS1=$PS1"\$(if [[ ${EUID} == 0 ]]; then echo '\[\033[0;31m\]\h'; else echo '${CURRENT_USER_COLOR}\u${SEPERATOR_COLOR}@${DEVICE_NAME_COLOR}\h'; fi)\[\033[0;37m\]"  # show user & host or root
+#PS1=$PS1"${PSUSER}@${PSDEVICE}"
+
+# hypen thingy surrounded by brackets ..so -> "]-("
+PS1=$PS1"${PSFRAME_COLOUR}]\342\224\200(" 
+
+# directory info
+# number of files in the current directory, and the directory contents in bytes
+PS1=$PS1"${PSDIRINFO}\$(ls -1 | wc -l | sed 's: ::g') files, \$(ls -sh | head -n1 | sed 's/total //')b"  
+
+# closing bracket + new line + bracket
+PS1=$PS1"${PSFRAME_COLOUR})\n\342\224\200[" 
+
+# pwd
+PS1=$PS1"${PSCURDIR}" # list the current directory
+
+#  closing bracket + new line + right angle thingy before shell cursor: └──╼
+PS1=$PS1"${PSFRAME_COLOUR}]\n\342\224\224\342\224\200\342\224\200\342\225\274 \[\033[0m\]"  
+
+#set prompt to PS1
+export PROMPT="${PS1}"
