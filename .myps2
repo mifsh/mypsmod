@@ -15,12 +15,11 @@
 # Formating based on: https://www.tweaking4all.com/software/macosx-software/customize-zsh-prompt/
 #
 
-
 # ZSH specific colours for iTerm || Apple_Terminal
-if [ "$TERM_PROGRAM" == "iTerm.app" ]
+if [ "$TERM_PROGRAM" = "iTerm.app" ]
 then
     PSFRAME_COLOUR="%F{015}"
-    PSDATE_TIME="%F{013}%D{%t %a %b %d%}"
+    PSDATE_TIME="%F{013}%D{%k:%M.%S %a %b %d}"
     PSUSER="%F{011}%n"
     PSDEVICE="%F{012}%m"
     PSDIRINFO="%F{010}"
@@ -28,46 +27,48 @@ then
 else
     # It's *probably* "$TERM_PROGRAM" == "Apple_Terminal"
     PSFRAME_COLOUR="%F{015}"
-    PSDATE_TIME="%F{013}%D{%t %a %b %d%}"
+    PSDATE_TIME="%F{013}%D{%k:%M.%S %a %b %d%}"
     PSUSER="%F{011}%n"
     PSDEVICE="%F{012}%m"
     PSDIRINFO="%F{010}"
     PSCURDIR="%F{010}%d"
 fi
 
+setopt PROMPT_SUBST
 
-# Broken down
-PS1="\n" # blank space between the last command
 
-# hypen like: ┌─[
-PS1=$PS1"${PSFRAME_COLOUR\342\224\214\342\224\200["  # a right angle and
+# blank space between the last command
+MPS1NL=$'\n'
 
- # current time
-PS1=$PS1"${PSDATE_TIME}"    
+MPS1=""
 
-# hypen thingy and  brackets --> "]-["
-PS1=$PS1"${PSFRAME_COLOUR}]\342\224\200["  
+# a right angle and
+MPS1="${MPS1}${PSFRAME_COLOUR}┌─["
+ 
+
+# current time
+MPS1="${MPS1}${PSDATE_TIME}"    
+
+MPS1="${MPS1}${PSFRAME_COLOUR}]-["  
 
 # user and device
-#PS1=$PS1"\$([[ \$? != 0 ]] && echo \"\[\033[0;31m\]\342\234\227\[\033[0;37m\]]\342\224\200\")"  # adds '[✗x]─' if the last command didn't succeed
-#PS1=$PS1"\$(if [[ ${EUID} == 0 ]]; then echo '\[\033[0;31m\]\h'; else echo '${CURRENT_USER_COLOR}\u${SEPERATOR_COLOR}@${DEVICE_NAME_COLOR}\h'; fi)\[\033[0;37m\]"  # show user & host or root
-#PS1=$PS1"${PSUSER}@${PSDEVICE}"
+MPS1="${MPS1}${PSUSER}@${PSDEVICE}"
 
-# hypen thingy surrounded by brackets ..so -> "]-("
-PS1=$PS1"${PSFRAME_COLOUR}]\342\224\200(" 
+MPS1="${MPS1}${PSFRAME_COLOUR}]-(" 
 
 # directory info
 # number of files in the current directory, and the directory contents in bytes
-PS1=$PS1"${PSDIRINFO}\$(ls -1 | wc -l | sed 's: ::g') files, \$(ls -sh | head -n1 | sed 's/total //')b"  
+MPS1="${MPS1}${PSDIRINFO}\$(ls -1 | wc -l | sed 's: ::g') files, \$(ls -sh | head -n1 | sed 's/total //')b"  
 
 # closing bracket + new line + bracket
-PS1=$PS1"${PSFRAME_COLOUR})\n\342\224\200[" 
+MPS1="${MPS1}${PSFRAME_COLOUR})${MPS1NL}-[" 
 
 # pwd
-PS1=$PS1"${PSCURDIR}" # list the current directory
+MPS1="${MPS1}${PSCURDIR}" # list the current directory
 
 #  closing bracket + new line + right angle thingy before shell cursor: └──╼
-PS1=$PS1"${PSFRAME_COLOUR}]\n\342\224\224\342\224\200\342\224\200\342\225\274 \[\033[0m\]"  
+MPS1="${MPS1}${PSFRAME_COLOUR}]${MPS1NL}└──╼"
 
 #set prompt to PS1
-export PROMPT="${PS1}"
+export PROMPT="${MPS1}"
+
