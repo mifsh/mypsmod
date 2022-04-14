@@ -31,9 +31,10 @@
 if [ "$TERM_PROGRAM" == "iTerm.app" ]
 then
     SEPERATOR_COLOR="\[\033[0;37m\]"
-    DATE_TIME_COLOR="\[\033[35;40m\]"
+    DATE_TIME_COLOR="\[\033[0;36m\]"
     CURRENT_USER_COLOR="\[\033[0;33m\]"
-    DEVICE_NAME_COLOR="\[\033[8;34;40m\]"
+    #DEVICE_NAME_COLOR="\[\033[8;34;40m\]"
+    DEVICE_NAME_COLOR="\[\033[0;96m\]"    
     DIRECTORY_INFO_COLOR="\[\033[0;32m\]"
 else
     # It's *probably* "$TERM_PROGRAM" == "Apple_Terminal"
@@ -60,13 +61,13 @@ PS1=$PS1"${SEPERATOR_COLOR}]\342\224\200["  # hypen thingy and  brackets --> "]-
 # user and device
 PS1=$PS1"\$([[ \$? != 0 ]] && echo \"\[\033[0;31m\]\342\234\227\[\033[0;37m\]]\342\224\200\")"  # adds '[✗x]─' if the last command didn't succeed
 PS1=$PS1"\$(if [[ ${EUID} == 0 ]]; then echo '\[\033[0;31m\]\h'; else echo '${CURRENT_USER_COLOR}\u${SEPERATOR_COLOR}@${DEVICE_NAME_COLOR}\h'; fi)\[\033[0;37m\]"  # show user & host or root
-
+#\h was showing a grey squore for some reason
 PS1=$PS1"${SEPERATOR_COLOR}]\342\224\200(" # hypen thingy surrounded by brackets ..so -> "]-("
 
 # directory info
 PS1=$PS1"${DIRECTORY_INFO_COLOR}\$(ls -1 | wc -l | sed 's: ::g') files, \$(ls -sh | head -n1 | sed 's/total //')b" # number of files in the current directory, and the directory contents in bytes
 
-PS1=$PS1"${SEPERATOR_COLOR})\n\342\224\200[" # closing bracket + new line + bracket
+PS1=$PS1"${SEPERATOR_COLOR})\n\342\224\200[" # closing bracket + new line + bracket ...so -> ")\n["
 
 # pwd
 PS1=$PS1"${DIRECTORY_INFO_COLOR}\w" # list the current directory
